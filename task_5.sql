@@ -27,4 +27,69 @@ CREATE TABLE IF NOT EXISTS Books (
 );
 
 -- Create Customers table
-CREATE
+CREATE TABLE IF NOT EXISTS Customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(215) NOT NULL,
+    email VARCHAR(215) UNIQUE NOT NULL,
+    address TEXT
+);
+
+-- Create Orders table
+CREATE TABLE IF NOT EXISTS Orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- Create Order_Details table
+CREATE TABLE IF NOT EXISTS Order_Details (
+    orderdetailid INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity DOUBLE NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- ============================================================
+-- TASK 3: LIST ALL TABLES
+-- ============================================================
+SHOW TABLES;
+
+-- ============================================================
+-- TASK 4: SHOW FULL DESCRIPTION OF TABLE 'Books'
+-- ============================================================
+SELECT 
+    COLUMN_NAME,
+    COLUMN_TYPE,
+    IS_NULLABLE,
+    COLUMN_KEY,
+    COLUMN_DEFAULT,
+    EXTRA
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE()
+AND TABLE_NAME = 'Books';
+
+-- ============================================================
+-- TASK 5: INSERT A SINGLE ROW INTO CUSTOMERS (SAFE INSERT)
+-- ============================================================
+INSERT INTO Customers (customer_id, customer_name, email, address)
+SELECT 1, 'Cole Baidoo', 'cbaidoo@sandtech.com', '123 Happiness Ave.'
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM Customers WHERE customer_id = 1
+);
+
+-- ============================================================
+-- TASK 6: CHECK THE INSERTED CUSTOMER
+-- ============================================================
+SELECT *
+FROM Customers
+WHERE customer_id = 1;
